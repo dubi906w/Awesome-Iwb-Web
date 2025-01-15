@@ -1,0 +1,34 @@
+@use "sass:map"
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap')
+
+
+//noinspection ALL
+[data-has-hero] .page
+  background: linear-gradient(215deg,var(--overlay-blurple),transparent 40%),radial-gradient(var(--overlay-blurple), transparent 40%) no-repeat -60vw -40vh / 105vw 200vh,radial-gradient(var(--overlay-blurple),transparent 65%) no-repeat 50% calc(100% + 20rem) / 60rem 30rem
+
+$colors-dark: (accent-low: #002d08,accent: #008027,accent-high: #a3d9a6,white: #ffffff,gray-1: #e9f0e9,gray-2: #bcc5bc,gray-3: #809181,gray-4: #4e5d4e,gray-5: #2e3d2f,gray-6: #1d2b1e,black: #141a14)
+
+$colors-light: (accent-low: #bbe3bd,accent: #007a24,accent-high: #003e0e,white: #141a14,gray-1: #1d2b1e,gray-2: #2e3d2f,gray-3: #4e5d4e,gray-4: #809181,gray-5: #bcc5bc,gray-6: #e9f0e9,gray-7: #f4f7f4,black: #ffffff)
+
+\:root[data-theme="light"]
+  --green-hsl: 145, 48%, 56%
+  --sl-color-bg-nav: 224, 19%, 97%
+  @each $key, $value in $colors-light
+    --sl-color-#{"" + $key}: #{$value}
+
+\:root
+  --green-hsl: 145, 78%, 30%
+  --overlay-blurple: hsla(var(--green-hsl), .2)
+  --sl-color-bg-nav: 224, 14%, 16%
+  @each $key, $value in $colors-dark
+    --sl-color-#{"" + $key}: #{$value}
+
+header.header
+  backdrop-filter: blur(5rem)
+  background-color: hsla(var(--sl-color-bg-nav),.5)
+
+.text-aiwb-color-fill
+  background: -webkit-linear-gradient(120deg, #5AC587 30%, #669AFF)
+  -webkit-background-clip: text
+  background-clip: text
+  -webkit-text-fill-color: transparent

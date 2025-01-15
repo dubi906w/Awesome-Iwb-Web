@@ -1,0 +1,28 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import AiwbSidebarLinkCard from "./AiwbSidebarLinkCard.astro";
+import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter';
+import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro';
+import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro';
+import AiwbSidebarSublist from "./AiwbSidebarSublist.astro";
+
+const { sidebar } = Astro.props;
+---
+<div class="grid grid-rows-2 gap-y-2 px-2 pt-2">
+    <div class="grid grid-cols-2 gap-x-2">
+        <AiwbSidebarLinkCard color="green" title="更新日志" href="/guides/authoring-content/" description="Changelog" />
+        <AiwbSidebarLinkCard color="green" title="上车教程" href="/guides/authoring-content/" description="Tutorial" />
+    </div>
+    <div class="grid grid-cols-2 gap-x-2">
+        <AiwbSidebarLinkCard color="green" title="贡献规则" href="/guides/authoring-content/" description="Rules" />
+        <AiwbSidebarLinkCard color="green" title="特别感谢" href="/guides/authoring-content/" description="Special" />
+    </div>
+</div>
+
+<SidebarPersister {...Astro.props}>
+    <AiwbSidebarSublist sublist={sidebar} />
+</SidebarPersister>
+
+<div class="md:sl-hidden">
+    <MobileMenuFooter {...Astro.props} />
+</div>

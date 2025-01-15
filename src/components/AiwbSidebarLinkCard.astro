@@ -1,0 +1,109 @@
+---
+import {Icon} from '@astrojs/starlight/components';
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'title'> {
+    title: string;
+    description?: string;
+    color?: "orange" | "red" | "green" | "blue";
+}
+
+const { title, description, color,  ...attributes } = Astro.props;
+---
+
+<div class:list={["sl-link-card-aiwb relative overflow-clip border-2 border-solid",`card-${color}`]} {...attributes}>
+	<span class="sl-flex stack">
+		<a {...attributes}>
+			<span class="title text-base" set:html={title} />
+		</a>
+        {description && <span class="description text-2.85" set:html={description} />}
+	</span>
+    <Icon name="right-arrow" size="1.333em" class="icon rtl:flip" />
+</div>
+
+<style lang="sass">
+    @use "sass:map"
+
+    $green-color: (bg: #f0fdf4, bgd: #002d08, bd: #15803d )
+    $colors: (green: $green-color)
+
+    .sl-link-card-aiwb
+        display: grid
+        grid-template-columns: 1fr auto
+        gap: 0.5rem
+        border-radius: 0.5rem
+        padding: 0.9rem 0.8rem
+        /*box-shadow: var(--sl-shadow-sm)*/
+        position: relative
+
+    @each $color-name, $color-map in $colors
+        .sl-link-card-aiwb.card-#{$color-name}
+            background-color: map.get($color-map, "bgd")
+            border: 1pt solid map.get($color-map, "bd")
+            .icon
+                color: white
+
+    @each $color-name, $color-map in $colors
+        html[data-theme="light"] .sl-link-card-aiwb.card-#{$color-name}
+            background-color: map.get($color-map, "bg")
+            border: 1pt solid map.get($color-map, "bd")
+            .icon
+                color: map.get($color-map, "bd")
+
+    @media (any-hover: hover)
+      @each $color-name, $color-map in $colors
+        .sl-link-card-aiwb.card-#{$color-name}:hover
+            background-color: map.get($color-map, "bd") !important
+            border: 1.5pt solid map.get($color-map, "bd")
+            .title
+                color: white
+            .description
+                color: white
+                opacity: 75%
+            .inner-img
+                opacity: 0
+            .icon
+                color: white !important
+
+    a
+        text-decoration: none
+        line-height: var(--sl-line-height-headings)
+
+
+    /* a11y fix for https://github.com/withastro/starlight/issues/487 */
+    a::before
+        content: ''
+        position: absolute
+        inset: 0
+
+
+    .sl-link-card-aiwb .stack
+        flex-direction: column
+        gap: 0.5rem
+
+
+    .sl-link-card-aiwb .title
+        color: var(--sl-color-white)
+        font-weight: 600
+        line-height: 0.8 !important
+
+
+    .sl-link-card-aiwb .description
+        color: var(--sl-color-gray-3)
+        line-height: 0.8
+
+
+    .icon
+        color: var(--sl-color-gray-3)
+
+
+    /* Hover state */
+    .sl-link-card-aiwb:hover
+        background: var(--sl-color-gray-7, var(--sl-color-gray-6))
+        border-color: var(--sl-color-gray-2)
+
+
+    .sl-link-card-aiwb:hover .icon
+        color: var(--sl-color-white)
+
+</style>

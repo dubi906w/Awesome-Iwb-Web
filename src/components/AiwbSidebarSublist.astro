@@ -1,0 +1,212 @@
+---
+import {z} from "astro/zod";
+import type {LinkHTMLAttributes} from "@astrojs/starlight/schemas/sidebar";
+import {Badge, Icon} from '@astrojs/starlight/components';
+import SidebarRestorePoint from './SidebarRestorePoint.astro';
+
+Object.filter = (obj, predicate) =>
+    Object.keys(obj)
+        .filter( key => predicate(obj[key]) )
+        .reduce( (res, key) => (res[key] = obj[key], res), {} );
+
+interface Props {
+    sublist: SidebarEntry[];
+    nested?: boolean;
+}
+
+type SidebarEntry = Link | Group;
+
+export interface Link {
+    type: 'link';
+    label: string;
+    icon: any;
+    href: string;
+    isCurrent: boolean;
+    badge: Badge | undefined;
+    attrs: {
+        aiwb_icon: string;
+        aiwb_desc: string;
+        html_attr: LinkHTMLAttributes;
+    };
+}
+
+interface Group {
+    type: 'group';
+    label: string;
+    entries: (Link | Group)[];
+    collapsed: boolean;
+    badge: Badge | undefined;
+}
+
+function flattenSidebar(sidebar: SidebarEntry[]): Link[] {
+    // noinspection TypeScriptUnresolvedReference
+    return sidebar.flatMap((entry) => entry.type === 'group' ? flattenSidebar(entry.entries) : entry);
+}
+
+const badgeBaseSchema = z.object({
+    variant: z.enum(['note', 'danger', 'success', 'caution', 'tip', 'default']).default('default'),
+    class: z.string().optional(),
+});
+const badgeSchema = badgeBaseSchema.extend({
+    text: z.string(),
+});
+type Badge = z.output<typeof badgeSchema>;
+
+const { sublist, nested } = Astro.props;
+sublist.map((e)=>{
+    console.log(e)
+})
+---
+
+
+<ul class:list={{ 'top-level': !nested }}>
+    {
+        sublist.map((entry) => (
+                <li>
+                    {entry.type === 'link' ? (
+                            <a
+                                    href={entry.href}
+                                    aria-current={entry.isCurrent && 'page'}
+                                    class:list={[{ large: !nested }, entry.attrs.class]}
+                                    {...Object.filter(entry.attrs,attr=>attr.startsWith("aiwb_"))}
+                            >
+                                <div class="flex flex-row items-center gap-x-2.2 w-fulll">
+                                    <div class="w-24pt h-24pt flex items-center justify-items-center">
+                                        <img src={entry.attrs.aiwb_icon} class="max-w-24pt max-h-24pt"/>
+                                    </div>
+                                    <div class="flex flex-1 w-0 flex-col shrink-1">
+                                        <div class="flex">
+                                            <div class="truncate">{entry.label}</div>
+                                        </div>
+                                        <div class="-mt-0.8">
+                                            <span class="text-xs font-400 opacity-75">{entry.attrs.aiwb_desc}</span>
+                                        </div>
+                                    </div>
+                                    <div class="shrink-0 text-align-end flex flex-row-reverse">
+                                        {entry.badge && (
+                                                <Badge
+                                                        variant={entry.badge.variant}
+                                                        class={entry.badge.class}
+                                                        text={entry.badge.text}
+                                                />
+                                        )}
+                                    </div>
+                                </div>
+                            </a>
+                    ) : (
+                            <details
+                                    open={flattenSidebar(entry.entries).some((i) => i.isCurrent) || !entry.collapsed}
+                            >
+                                <SidebarRestorePoint />
+                                <summary>
+                                    <div class="group-label">
+                                        <span class="large">{entry.label}</span>
+                                        {entry.badge && (
+                                                <Badge
+                                                        variant={entry.badge.variant}
+                                                        class={entry.badge.class}
+                                                        text={entry.badge.text}
+                                                />
+                                        )}
+                                    </div>
+                                    <Icon name="right-caret" class="caret" size="1.25rem" />
+                                </summary>
+                                <Astro.self sublist={entry.entries} nested />
+                            </details>
+                    )}
+                </li>
+        ))
+    }
+</ul>
+
+<style>
+    ul {
+        --sl-sidebar-item-padding-inline: 0.5rem;
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        overflow-wrap: anywhere;
+    }
+
+    ul ul li {
+        margin-inline-start: var(--sl-sidebar-item-padding-inline);
+        border-inline-start: 1px solid var(--sl-color-hairline-light);
+        padding-inline-start: var(--sl-sidebar-item-padding-inline);
+    }
+
+    .large {
+        font-size: var(--sl-text-lg);
+        font-weight: 600;
+        color: var(--sl-color-white);
+    }
+
+    .top-level > li + li {
+        margin-top: 0.75rem;
+    }
+
+    summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.2em var(--sl-sidebar-item-padding-inline);
+        line-height: 1.4;
+        cursor: pointer;
+        user-select: none;
+    }
+    summary::marker,
+    summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .caret {
+        transition: transform 0.2s ease-in-out;
+        flex-shrink: 0;
+    }
+    :global([dir='rtl']) .caret {
+        transform: rotateZ(180deg);
+    }
+    [open] > summary .caret {
+        transform: rotateZ(90deg);
+    }
+
+    a {
+        display: block;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        color: var(--sl-color-gray-2);
+        padding: 0.3em var(--sl-sidebar-item-padding-inline);
+        line-height: 1.4;
+    }
+
+    a:hover,
+    a:focus {
+        color: var(--sl-color-white);
+    }
+
+    [aria-current='page'],
+    [aria-current='page']:hover,
+    [aria-current='page']:focus {
+        font-weight: 600;
+        color: var(--sl-color-text-invert);
+        background-color: var(--sl-color-text-accent);
+    }
+
+    a > *:not(:last-child),
+    .group-label > *:not(:last-child) {
+        margin-inline-end: 0.25em;
+    }
+
+    @media (min-width: 50rem) {
+        .top-level > li + li {
+            margin-top: 0.5rem;
+        }
+        .large {
+            font-size: var(--sl-text-base);
+        }
+        a {
+            font-size: var(--sl-text-sm);
+        }
+    }
+</style>

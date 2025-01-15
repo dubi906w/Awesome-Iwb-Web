@@ -1,0 +1,156 @@
+---
+import { LinkButton } from '@astrojs/starlight/components';
+import AiwbLinkButton from "./AiwbLinkButton.astro";
+
+const {data} = Astro.props.entry;
+const { title, productName, tagline, image, actions = [] } = data.hero || {};
+
+console.log(actions);
+
+const imageAttrs = {
+    loading: 'eager' as const,
+    decoding: 'async' as const,
+    width: 400,
+    height: 400,
+    alt: image?.alt || '',
+};
+
+let darkImage: ImageMetadata | undefined;
+let lightImage: ImageMetadata | undefined;
+let rawHtml: string | undefined;
+if (image) {
+    if ('file' in image) {
+        darkImage = image.file;
+    } else if ('dark' in image) {
+        darkImage = image.dark;
+        lightImage = image.light;
+    } else {
+        rawHtml = image.html;
+    }
+}
+---
+
+<div class="hero">
+    {
+        darkImage && (
+                    <img
+                            src={darkImage.src}
+                            {...imageAttrs}
+                            class:list={{ 'light:sl-hidden': Boolean(lightImage) }}
+                    />
+        )
+    }
+    {lightImage && <img src={lightImage.src} {...imageAttrs} class="dark:sl-hidden" />}
+    {rawHtml && <div class="hero-html sl-flex" set:html={rawHtml} />}
+    <div class="sl-flex stack">
+        <div class="sl-flex copy">
+            <h1 id="_top" data-page-title set:html={productName} />
+            <h2 set:html={title} />
+            {tagline && <div class="tagline" set:html={tagline} />}
+        </div>
+        {
+            actions.length > 0 && (
+                        <div class="sl-flex actions">
+                            {actions.map(
+                                ({ attrs: { class: className, ...attrs } = {}, icon, link: href, text, variant }) => (
+                                        <AiwbLinkButton {href} {variant} icon={icon?.name} class:list={[className]} {...attrs}>
+                                            {text}
+                                            {icon?.html && <Fragment set:html={icon.html} />}
+                                        </AiwbLinkButton>
+                                )
+                            )}
+                        </div>
+            )
+        }
+    </div>
+</div>
+
+<style>
+    .hero {
+        display: grid;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .hero > img,
+    .hero > .hero-html {
+        object-fit: contain;
+        width: min(70%, 20rem);
+        height: auto;
+        margin-inline: auto;
+    }
+
+    .stack {
+        flex-direction: column;
+        gap: clamp(1.5rem, calc(1.5rem + 1vw), 2rem);
+        text-align: center;
+    }
+
+    .copy {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .copy > * {
+        max-width: 50ch;
+    }
+
+    h1 {
+        font-size: clamp(var(--sl-text-3xl), calc(0.25rem + 5vw), var(--sl-text-6xl));
+        line-height: var(--sl-line-height-headings);
+        font-weight: 700;
+        font-family: "Lexend", sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+        color: var(--sl-color-white);
+    }
+
+    h2 {
+        font-size: clamp(var(--sl-text-2xl), calc(0.25rem + 3vw), var(--sl-text-5xl));
+        line-height: 0.7;
+        font-weight: 600;
+        color: var(--sl-color-white);
+    }
+
+    .tagline {
+        margin-top: 12pt;
+        line-height: 1.5;
+        font-size: clamp(var(--sl-text-base), calc(0.0625rem + 2vw), var(--sl-text-xl));
+        color: var(--sl-color-gray-3);
+    }
+
+    .actions {
+        gap: 1rem 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    @media (min-width: 50rem) {
+        .hero {
+            grid-template-columns: 7fr 4fr;
+            gap: 3%;
+            padding-block: clamp(2.5rem, calc(1rem + 10vmin), 10rem);
+        }
+
+        .hero > img,
+        .hero > .hero-html {
+            order: 2;
+            width: min(100%, 25rem);
+        }
+
+        .stack {
+            text-align: start;
+        }
+
+        .copy {
+            align-items: flex-start;
+        }
+
+        .actions {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
