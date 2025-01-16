@@ -9,6 +9,13 @@ export default defineConfig({
 		syntaxHighlight: 'prism',
 		gfm: true,
 	},
+	vite: {
+		server: {
+			watch: {
+				ignored: ["./starlight/*"], // HERE
+			},
+		},
+	},
 	integrations: [
 		UnoCSS(),
 		starlight({

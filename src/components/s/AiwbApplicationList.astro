@@ -1,0 +1,37 @@
+---
+import {TabItem, Tabs} from "@astrojs/starlight/components";
+import AiwbApplicationCard from "./AiwbApplicationCard.astro";
+import {getCollection, getEntry} from 'astro:content';
+import {convertUserAvatar} from "../../utils/convertUserAvatar"
+
+const allDocs = await getCollection('docs');
+
+const allApps = allDocs.map((e) => {
+    if (e.data.aiwbPageType == "aiwbApplication") return e;
+    return undefined
+}).filter(function( element ) {
+    return element !== undefined;
+})
+---
+
+<Tabs>
+    <TabItem label="最热">
+        <div class="flex flex-col gap-y-3">
+            {allApps.map((e) => (
+                    <AiwbApplicationCard
+                            appIcon={e.data.aiwbApplication.appIcon}
+                            appName={e.data.aiwbApplication.appName}
+                            appTagline={e.data.aiwbApplication.appTagline}
+                            developerName={e.data.aiwbApplication.developer.name}
+                            developerAvatar={convertUserAvatar(e.data.aiwbApplication.developer)}
+                            languages={e.data.aiwbApplication.progLanguages}
+                            appDescription={e.data.aiwbApplication.appDescription}
+                            viewCount="5733"
+                            stargazerCount="1931"
+                            href={`/${e.id}/`}
+                    />
+            ))}
+        </div>
+    </TabItem>
+    <TabItem label="最新">Io, Europa, Ganymede</TabItem>
+</Tabs>

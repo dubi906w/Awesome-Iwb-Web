@@ -1,8 +1,11 @@
 ---
 import {z} from "astro/zod";
+import { Image } from 'astro:assets';
 import type {LinkHTMLAttributes} from "@astrojs/starlight/schemas/sidebar";
 import {Badge, Icon} from '@astrojs/starlight/components';
 import SidebarRestorePoint from './SidebarRestorePoint.astro';
+import { getCollection, getEntry } from 'astro:content';
+
 
 Object.filter = (obj, predicate) =>
     Object.keys(obj)
@@ -53,9 +56,26 @@ const badgeSchema = badgeBaseSchema.extend({
 type Badge = z.output<typeof badgeSchema>;
 
 const { sublist, nested } = Astro.props;
-sublist.map((e)=>{
-    console.log(e)
-})
+
+let aiwbApplicationsData = {};
+
+const trimSlashes = str => {
+    let newstr: string;
+    if (typeof str === 'string') {
+        newstr = str.replace(/^\/|\/$/g, '')
+    }
+    return newstr
+}
+
+await Promise.all(sublist.map(async (e) => {
+    if (e.type === 'link') {
+        let id = trimSlashes(e.href);
+        const data = await getEntry("docs", id)
+        if (data.data.aiwbPageType == "aiwbApplication") {
+            aiwbApplicationsData[id] = data;
+        }
+    }
+}))
 ---
 
 
@@ -63,56 +83,74 @@ sublist.map((e)=>{
     {
         sublist.map((entry) => (
                 <li>
-                    {entry.type === 'link' ? (
-                            <a
-                                    href={entry.href}
-                                    aria-current={entry.isCurrent && 'page'}
-                                    class:list={[{ large: !nested }, entry.attrs.class]}
-                                    {...Object.filter(entry.attrs,attr=>attr.startsWith("aiwb_"))}
-                            >
-                                <div class="flex flex-row items-center gap-x-2.2 w-fulll">
-                                    <div class="w-24pt h-24pt flex items-center justify-items-center">
-                                        <img src={entry.attrs.aiwb_icon} class="max-w-24pt max-h-24pt"/>
+                    {entry.type === 'link' && aiwbApplicationsData[trimSlashes(entry.href)] ? (
+                        <a
+                                href={entry.href}
+                                aria-current={entry.isCurrent && 'page'}
+                                class:list={[{ large: !nested }, entry.attrs.class]}
+                                {...Object.filter(entry.attrs,attr=>attr.startsWith("aiwb_"))}
+                        >
+                            <div class="flex flex-row items-center gap-x-2.2 w-full">
+                                <div class="w-24pt h-24pt flex items-center justify-items-center">
+                                    <Image alt={`${aiwbApplicationsData[trimSlashes(entry.href)].data.aiwbApplication.appName} icon`}
+                                           src={aiwbApplicationsData[trimSlashes(entry.href)].data.aiwbApplication.appIcon}
+                                           class="max-w-24pt max-h-24pt"/>
+                                </div>
+                                <div class="flex flex-1 w-0 flex-col shrink-1">
+                                    <div class="flex">
+                                        <div class="truncate">{aiwbApplicationsData[trimSlashes(entry.href)].data.aiwbApplication.appShortName}</div>
                                     </div>
-                                    <div class="flex flex-1 w-0 flex-col shrink-1">
-                                        <div class="flex">
-                                            <div class="truncate">{entry.label}</div>
-                                        </div>
-                                        <div class="-mt-0.8">
-                                            <span class="text-xs font-400 opacity-75">{entry.attrs.aiwb_desc}</span>
-                                        </div>
-                                    </div>
-                                    <div class="shrink-0 text-align-end flex flex-row-reverse">
-                                        {entry.badge && (
-                                                <Badge
-                                                        variant={entry.badge.variant}
-                                                        class={entry.badge.class}
-                                                        text={entry.badge.text}
-                                                />
-                                        )}
+                                    <div class="-mt-0.8">
+                                        <span class="text-xs font-400 opacity-75">{aiwbApplicationsData[trimSlashes(entry.href)].data.aiwbApplication.appTagline}</span>
                                     </div>
                                 </div>
-                            </a>
+                                <div class="shrink-0 text-align-end flex flex-row-reverse">
+                                    {entry.badge && (
+                                            <Badge
+                                                    variant={entry.badge.variant}
+                                                    class={entry.badge.class}
+                                                    text={entry.badge.text}
+                                            />
+                                    )}
+                                </div>
+                            </div>
+                        </a>
+                    ) : entry.type === 'link' ? (
+                        <a
+                                href={entry.href}
+                                aria-current={entry.isCurrent && 'page'}
+                                class:list={[{ large: !nested }, entry.attrs.class]}
+                                {...entry.attrs}
+                        >
+                            <span>{entry.label}</span>
+                            {entry.badge && (
+                                    <Badge
+                                            variant={entry.badge.variant}
+                                            class={entry.badge.class}
+                                            text={entry.badge.text}
+                                    />
+                            )}
+                        </a>
                     ) : (
-                            <details
-                                    open={flattenSidebar(entry.entries).some((i) => i.isCurrent) || !entry.collapsed}
-                            >
-                                <SidebarRestorePoint />
-                                <summary>
-                                    <div class="group-label">
-                                        <span class="large">{entry.label}</span>
-                                        {entry.badge && (
-                                                <Badge
-                                                        variant={entry.badge.variant}
-                                                        class={entry.badge.class}
-                                                        text={entry.badge.text}
-                                                />
-                                        )}
-                                    </div>
-                                    <Icon name="right-caret" class="caret" size="1.25rem" />
-                                </summary>
-                                <Astro.self sublist={entry.entries} nested />
-                            </details>
+                        <details
+                                open={flattenSidebar(entry.entries).some((i) => i.isCurrent) || !entry.collapsed}
+                        >
+                            <SidebarRestorePoint />
+                            <summary>
+                                <div class="group-label">
+                                    <span class="large">{entry.label}</span>
+                                    {entry.badge && (
+                                            <Badge
+                                                    variant={entry.badge.variant}
+                                                    class={entry.badge.class}
+                                                    text={entry.badge.text}
+                                            />
+                                    )}
+                                </div>
+                                <Icon name="right-caret" class="caret" size="1.25rem" />
+                            </summary>
+                            <Astro.self sublist={entry.entries} nested />
+                        </details>
                     )}
                 </li>
         ))

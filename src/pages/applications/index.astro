@@ -1,0 +1,9 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import AiwbApplicationList from "../../components/s/AiwbApplicationList.astro";
+
+---
+
+<StarlightPage frontmatter={{ title: '应用列表', isShowTitle: false, tableOfContents: false }}>
+    <AiwbApplicationList/>
+</StarlightPage>

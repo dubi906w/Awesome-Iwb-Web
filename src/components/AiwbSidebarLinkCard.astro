@@ -18,7 +18,7 @@ const { title, description, color,  ...attributes } = Astro.props;
 		</a>
         {description && <span class="description text-2.85" set:html={description} />}
 	</span>
-    <Icon name="right-arrow" size="1.333em" class="icon rtl:flip" />
+    <Icon name="right-arrow" size="1.333em" class="icon rtl:flip absolute top-3 right-2" />
 </div>
 
 <style lang="sass">
@@ -54,7 +54,7 @@ const { title, description, color,  ...attributes } = Astro.props;
       @each $color-name, $color-map in $colors
         .sl-link-card-aiwb.card-#{$color-name}:hover
             background-color: map.get($color-map, "bd") !important
-            border: 1.5pt solid map.get($color-map, "bd")
+            border: 1pt solid map.get($color-map, "bd")
             .title
                 color: white
             .description
