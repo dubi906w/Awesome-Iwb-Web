@@ -1,0 +1,26 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import StarlightHead from '@astrojs/starlight/components/Head.astro';
+import VtbotStarlight from 'astro-vtbot/components/starlight/Base.astro';
+import ProgressBar from "astro-vtbot/components/ProgressBar.astro";
+import PageOffset from 'astro-vtbot/components/PageOffset.astro';
+---
+
+<VtbotStarlight {...Astro.props} transition:animate="fade" replaceSidebarContent>
+    <StarlightHead {...Astro.props}><slot /></StarlightHead>
+</VtbotStarlight>
+
+<ProgressBar />
+
+<style is:global>
+    .swup-progress-bar {
+        background: linear-gradient(
+                to bottom,
+                var(--sl-color-accent),
+                var(--sl-color-accent-high),
+                var(--sl-color-accent)
+        );
+        height: 5px;
+    }</style>
+
+<PageOffset name="main" />

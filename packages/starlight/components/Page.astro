@@ -47,7 +47,7 @@ const mainDataAttributes: DOMStringMap = {};
 if (pagefindEnabled) mainDataAttributes['data-pagefind-body'] = '';
 ---
 
-<html lang={Astro.props.lang} dir={Astro.props.dir} {...htmlDataAttributes}>
+<html transition:name="root" transition:animate="none" lang={Astro.props.lang} dir={Astro.props.dir} {...htmlDataAttributes}>
 	<head>
 		<Head {...Astro.props} />
 		<style>
@@ -85,7 +85,7 @@ if (pagefindEnabled) mainDataAttributes['data-pagefind-body'] = '';
 			<Header slot="header" {...Astro.props} />
 			{Astro.props.hasSidebar && <Sidebar slot="sidebar" {...Astro.props} />}
 			<script src="./SidebarPersistState"></script>
-			<TwoColumnContent {...Astro.props}>
+			<TwoColumnContent transition:animate="fade"  {...Astro.props}>
 				<PageSidebar slot="right-sidebar" {...Astro.props} />
 				<main
 					{...mainDataAttributes}

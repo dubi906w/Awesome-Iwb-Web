@@ -1,4 +1,5 @@
 import {defineConfig, presetMini, presetUno} from 'unocss';
+import { presetKobalte } from 'unocss-preset-primitives'
 
 export default defineConfig({
 	presets: [
@@ -8,6 +9,7 @@ export default defineConfig({
 				light: '[data-theme="light"]',
 			},
 		}),
+		presetKobalte(/* options */),
 		// ...custom presets
 	],
 })

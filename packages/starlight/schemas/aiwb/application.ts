@@ -1,5 +1,6 @@
 import type {SchemaContext} from "astro:content";
 import {z} from "astro/zod";
+// @ts-ignore
 import GithubLangs from "./github_lang_colors.json"
 
 const githubLangsArr = Object.keys(GithubLangs);
@@ -40,7 +41,8 @@ export const AiwbApplicationSchema = ({image}: SchemaContext) =>
         attributes: z.object({
             isOpenSource: z.boolean().default(true),
             pricingType: z.enum(["free","freemium","subscription","paid"]).default("free"),
-            supportedPlatform: z.array(z.enum(["windows7","windows8","windows8.1","windows10","windows11","macos","uos","android","ios","harmonyos","linux"]))
+            supportedPlatform: z.array(z.enum(["windows7","windows8","windows8.1","windows10","windows11","macos","uos","linux"])),
+            tags: z.array(z.string()).optional()
         }),
         link: z.object({
             github: z.array(AiwbApplicationGitRepoSchema("GitHub 仓库")).optional(),

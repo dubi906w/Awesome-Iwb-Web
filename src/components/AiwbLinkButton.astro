@@ -37,6 +37,7 @@ const {
         outline-offset: 0.25rem;
         padding: 0.4375rem 1.125rem;
         text-decoration: none;
+        transition: filter 0.1s;
     }
 
     .sl-link-button svg {
@@ -48,8 +49,17 @@ const {
         border-color: var(--sl-color-text-accent);
         color: var(--sl-color-black);
     }
-    .sl-link-button.primary:hover {
-        color: var(--sl-color-black);
+    @media (any-hover: hover) {
+      .sl-link-button.primary:hover {
+        filter: brightness(85%);
+      }
+      .sl-link-button.primary:active {
+        filter: brightness(75%) !important;
+      }
+    }
+
+    .sl-link-button.primary:active {
+      filter: brightness(85%);
     }
     .sl-link-button.secondary {
         border-color: inherit;

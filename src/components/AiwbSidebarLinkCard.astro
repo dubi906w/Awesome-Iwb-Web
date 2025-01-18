@@ -1,6 +1,8 @@
 ---
 import {Icon} from '@astrojs/starlight/components';
 import type { HTMLAttributes } from 'astro/types';
+import type { Props } from '@astrojs/starlight/props';
+import {trimSlashes} from "../utils/trimSlashes"
 
 interface Props extends Omit<HTMLAttributes<'a'>, 'title'> {
     title: string;
@@ -9,9 +11,13 @@ interface Props extends Omit<HTMLAttributes<'a'>, 'title'> {
 }
 
 const { title, description, color,  ...attributes } = Astro.props;
+
+const isNowPage = trimSlashes(Astro.url.pathname) === trimSlashes(Astro.props.href);
+
+console.log(isNowPage)
 ---
 
-<div class:list={["sl-link-card-aiwb relative overflow-clip border-2 border-solid",`card-${color}`]} {...attributes}>
+<div class:list={["sl-link-card-aiwb relative overflow-clip border-2 border-solid",`card-${color}`,isNowPage?"highlighted":""]} {...attributes}>
 	<span class="sl-flex stack">
 		<a {...attributes}>
 			<span class="title text-base" set:html={title} />
@@ -52,7 +58,7 @@ const { title, description, color,  ...attributes } = Astro.props;
 
     @media (any-hover: hover)
       @each $color-name, $color-map in $colors
-        .sl-link-card-aiwb.card-#{$color-name}:hover
+        .sl-link-card-aiwb.card-#{$color-name}:hover , .sl-link-card-aiwb.card-#{$color-name}.highlighted
             background-color: map.get($color-map, "bd") !important
             border: 1pt solid map.get($color-map, "bd")
             .title

@@ -10,6 +10,7 @@ const {
 	variant,
 	size,
 	class: customClass,
+    isMonoFont,
 	...attrs
 } = parseWithFriendlyErrors(
 	BadgeComponentSchema,
@@ -18,7 +19,7 @@ const {
 );
 ---
 
-<span class:list={['sl-badge', variant, size, customClass]} {...attrs}>{text}</span>
+<span class:list={['sl-badge', variant, size, isMonoFont?"sl-badge-mono":"" ,customClass]} {...attrs}>{text}</span>
 
 <style>
 	:global(:root) {
@@ -60,12 +61,16 @@ const {
 		display: inline-block;
 		border: 1px solid var(--sl-color-border-badge);
 		border-radius: 0.25rem;
-		font-family: var(--sl-font-system-mono);
-		line-height: normal;
+		font-family: var(--sl-font-system);
+		line-height: 1;
 		color: var(--sl-color-text-badge);
 		background-color: var(--sl-color-bg-badge);
 		overflow-wrap: anywhere;
 	}
+
+    .sl-badge.sl-badge-mono {
+        font-family: var(--sl-font-system-mono);
+    }
 
 	/* Sidebar overrides */
 	:global(.sidebar-content) .sl-badge {
@@ -121,7 +126,7 @@ const {
 	/* Size variants */
 	.small {
 		font-size: var(--sl-text-xs);
-		padding: 0.125rem 0.25rem;
+		padding: 0.2rem 0.3rem;
 	}
 
 	.medium {

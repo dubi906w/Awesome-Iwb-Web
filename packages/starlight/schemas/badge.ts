@@ -16,6 +16,7 @@ const i18nBadgeSchema = badgeBaseSchema.extend({
 export const BadgeComponentSchema = badgeSchema
 	.extend({
 		size: z.enum(['small', 'medium', 'large']).default('small'),
+		isMonoFont: z.boolean().default(true)
 	})
 	.passthrough();
 

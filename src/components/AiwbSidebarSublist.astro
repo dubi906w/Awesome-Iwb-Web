@@ -5,7 +5,7 @@ import type {LinkHTMLAttributes} from "@astrojs/starlight/schemas/sidebar";
 import {Badge, Icon} from '@astrojs/starlight/components';
 import SidebarRestorePoint from './SidebarRestorePoint.astro';
 import { getCollection, getEntry } from 'astro:content';
-
+import {trimSlashes} from "../utils/trimSlashes"
 
 Object.filter = (obj, predicate) =>
     Object.keys(obj)
@@ -59,19 +59,11 @@ const { sublist, nested } = Astro.props;
 
 let aiwbApplicationsData = {};
 
-const trimSlashes = str => {
-    let newstr: string;
-    if (typeof str === 'string') {
-        newstr = str.replace(/^\/|\/$/g, '')
-    }
-    return newstr
-}
-
 await Promise.all(sublist.map(async (e) => {
     if (e.type === 'link') {
         let id = trimSlashes(e.href);
         const data = await getEntry("docs", id)
-        if (data.data.aiwbPageType == "aiwbApplication") {
+        if (data !== undefined && data.data.aiwbPageType == "aiwbApplication") {
             aiwbApplicationsData[id] = data;
         }
     }

@@ -1,0 +1,56 @@
+.aiwb-button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999rem;
+  display: inline-flex;
+  font-size: var(--sl-text-sm);
+  gap: 0.5em;
+  line-height: 1.1875;
+  outline-offset: 0.25rem;
+  padding: 0.4375rem 1.125rem;
+  text-decoration: none;
+  transition: filter 0.1s;
+}
+
+.aiwb-button svg {
+  margin-right: -4pt;
+}
+
+.aiwb-button.primary {
+  background: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+  color: var(--sl-color-black);
+}
+
+@media (any-hover: hover) {
+  .aiwb-button.primary:hover {
+    filter: brightness(85%);
+  }
+  .aiwb-button.primary:active {
+    filter: brightness(75%) !important;
+  }
+}
+
+.aiwb-button.primary:active {
+  filter: brightness(85%);
+}
+
+.aiwb-button.secondary {
+  border-color: inherit;
+  color: var(--sl-color-white);
+}
+.aiwb-button.minimal {
+  color: var(--sl-color-white);
+  padding-inline: 0;
+}
+
+.aiwb-button :global(svg) {
+  flex-shrink: 0;
+}
+
+@media (min-width: 50rem) {
+  .aiwb-button {
+    font-size: var(--sl-text-base);
+    padding: 0.5375rem 1.15rem;
+  }
+}

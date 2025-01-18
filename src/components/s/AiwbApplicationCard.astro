@@ -42,7 +42,7 @@ const { appIcon, appName, appDescription, appTagline,
             <img src={developerAvatar} class="w-10pt h-10pt rounded-full" alt="developer avatar" />
             <span class="text-0.85rem description ml-1">{developerName}</span>
             <span class="mx-0.5 text-gray-500 opacity-40 dark:text-gray-300 md:mx-1">·</span>
-            <div class="h-9pt mr-1 rounded-full border-1 border-solid border-zinc-500 flex flex-row overflow-clip">
+            <div class="mr-1 rounded-full border-1 border-solid border-zinc-500 flex flex-row overflow-clip">
                 {languages.map(l=>(
                     <div style={`background-color: ${githubLangsColor[l]}`} class="w-9pt h-9pt"/>
                 ))}
